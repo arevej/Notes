@@ -1,0 +1,154 @@
+<!-- <h2> Notes </h2>
+<a href="/logout">Logout</a> -->
+
+<style>
+#space {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #F7FDF5;
+}
+
+#note {
+  border: grey;
+  background: #CBD8F7;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+#note textarea {
+  background: rgba(0,0,0,0.05);
+  position: absolute;
+  top: 20px;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  border: none;
+  resize: none;
+}
+
+#colors {
+  position: absolute;
+  height: 17px;
+  bottom: 0;
+  left: 3px;
+  right: 30px;
+}
+
+#sq-blue, #sq-red, #sq-yellow {
+  display: inline-block;
+  content: ' ';
+  height: 10px;
+  width: 10px;
+  border: 1px solid grey;
+  border-radius: 5px;
+}
+
+#sq-blue {
+  background: #CBD8F7;
+}
+
+#sq-red {
+  background: #F7CBCB;
+}
+
+#sq-yellow {
+  background: #F7F3CB;
+}
+#resize {
+  width: 13px;
+  height: 13px;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+}
+
+#triangle {
+	width: 0;
+	height: 0;
+	border-bottom: 10px solid rgba(0,0,0,0.1);
+	border-left: 10px solid transparent;
+}
+</style>
+
+
+<div id='space'>
+  <div id='note' onmousedown="handleMouseDown(event)" onmousemove="handleMouseMove(event)" onmouseup="handleMouseUp(event)" onmouseleave="handleMouseUp(event)">
+    <textarea></textarea>
+    <div id='colors'>
+      <div id='sq-blue' onclick="changeColor('#CBD8F7')"></div>
+      <div id='sq-red' onclick="changeColor('#F7CBCB')"></div>
+      <div id='sq-yellow' onclick="changeColor('#F7F3CB')"></div>
+    </div>
+    <div id='resize' onmousedown="handleMouseDownR(event)" onmousemove="handleMouseMoveR(event)" onmouseup="handleMouseUpR(event)" onmouseleave="handleMouseUpR(event)">
+      <div id='triangle'></div>
+      <div id='triangle-border'></div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+var isDown = false;
+var posLeft = 0;
+var posTop = 0;
+
+function handleMouseDown(event) {
+  isDown = true;
+  var element = document.getElementById('note');
+  posLeft = event.clientX - parseFloat(element.style.left || 0);
+  posTop = event.clientY - parseFloat(element.style.top || 0);
+}
+
+function handleMouseMove(event) {
+  if (isDown){
+    var element = document.getElementById('note');
+    element.style.top = event.clientY - posTop;
+    element.style.left = event.clientX - posLeft;
+  }
+}
+
+function handleMouseUp(event) {
+  isDown = false;
+  posLeft = 0;
+  posTop = 0;
+}
+
+var isDownR = false;
+var posLeftR = 0;
+var posTopR = 0;
+
+function handleMouseDownR(event) {
+  isDownR = true;
+  var element = document.getElementById('note');
+  posLeftR = event.clientX - parseFloat(element.style.left || 0) - parseFloat(getComputedStyle(element).width || 0);
+  posTopR = event.clientY - parseFloat(element.style.top || 0) - parseFloat(getComputedStyle(element).height || 0);
+
+  event.stopPropagation();
+}
+
+function handleMouseMoveR(event) {
+  if (isDownR){
+    var element = document.getElementById('note');
+    element.style.height = event.clientY - parseFloat(element.style.top || 0) - posLeftR;
+    element.style.width = event.clientX - parseFloat(element.style.left || 0) - posTopR;
+  }
+}
+
+function handleMouseUpR(event) {
+  isDownR = false;
+  posLeftR = 0;
+  posTopR = 0;
+}
+
+function changeColor(color) {
+  var element = document.getElementById('note');
+  element.style.backgroundColor = color;
+}
+
+</script>
