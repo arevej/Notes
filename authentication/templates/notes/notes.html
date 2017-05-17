@@ -93,9 +93,9 @@
     <div class='close' onclick="deleteNote(event)">x</div>
     <textarea></textarea>
     <div class='colors'>
-      <div class='sq-blue' onclick="changeColor('#CBD8F7')"></div>
-      <div class='sq-red' onclick="changeColor('#F7CBCB')"></div>
-      <div class='sq-yellow' onclick="changeColor('#F7F3CB')"></div>
+      <div class='sq-blue' onclick="changeColor(event, 'blue')"></div>
+      <div class='sq-red' onclick="changeColor(event, 'red')"></div>
+      <div class='sq-yellow' onclick="changeColor(event, 'yellow')"></div>
     </div>
     <div class='resize' onmousedown="handleMouseDownR(event)" onmousemove="handleMouseMoveR(event)" onmouseup="handleMouseUpR(event)" onmouseleave="handleMouseUpR(event)">
       <div class='triangle'></div>
@@ -106,6 +106,27 @@
 
 
 <script>
+
+var notes = [
+  {% for note in all_notes %}
+  { color: '{{note.color}}', coord_x: {{note.coord_x}}, coord_y: {{note.coord_y}}, width: {{note.width}}, height: {{note.height}}, text: '{{note.text}}'   },
+  {% endfor %}
+];
+
+notes.forEach(function(note) {
+  var templateNote = document.getElementById('template-note');
+  var newNote = templateNote.cloneNode(true);
+  newNote.id = '';
+  newNote.style.top = note.coord_y;
+  newNote.style.left = note.coord_x;
+  newNote.style.width = note.width;
+  newNote.style.height = note.height;
+  window._n=newNote;
+  newNote.style.top=50;
+  newNote.getElementsByTagName('textarea')[0].innerHTML = note.text;
+  changeColor({ target: newNote }, note.color);
+  document.getElementById('space').appendChild(newNote);
+});
 
 
 function addNote(event) {
@@ -131,7 +152,7 @@ function findNote(event) {
 
 function deleteNote(event) {
   var note = findNote(event);
-  note.remove(); 
+  note.remove();
 }
 
 var isDown = false;
@@ -186,9 +207,17 @@ function handleMouseUpR(event) {
   posTopR = 0;
 }
 
-function changeColor(color) {
+function changeColor(event, color) {
   var element = findNote(event);
-  element.style.backgroundColor = color;
+  if (color == 'blue'){
+    element.style.backgroundColor = '#CBD8F7';
+  }
+  if (color == 'red'){
+    element.style.backgroundColor = '#F7CBCB';
+  }
+  if (color == 'yellow'){
+    element.style.backgroundColor = '#F7F3CB';
+  }
 }
 
 </script>

@@ -6,7 +6,9 @@ from django.contrib.auth.models import User
 
 def index (request):
     if request.user.is_authenticated():
-        return render(request, 'notes/notes.html' )
+        all_notes = request.user.note_set.all()
+        context = {'all_notes': all_notes}
+        return render(request, 'notes/notes.html', context)
     else:
         return HttpResponseRedirect(reverse('login'))
 
