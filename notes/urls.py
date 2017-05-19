@@ -23,5 +23,6 @@ urlpatterns = [
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/login'}, name='logout'),
     url(r'^register/$', views.register, name='register'),
+    url(r'^notes/(?P<note_id>[0-9]+)$', views.update_note),
     url(r'^$', views.index, name='notes'),
 ]

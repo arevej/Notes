@@ -91,11 +91,11 @@
 <div id='space' onclick="addNote(event)">
   <div id='template-note' class='note' onmousedown="handleMouseDown(event)" onmousemove="handleMouseMove(event)" onmouseup="handleMouseUp(event)" onmouseleave="handleMouseUp(event)">
     <div class='close' onclick="deleteNote(event)">x</div>
-    <textarea></textarea>
+    <textarea oninput='handleTextChange(event)'></textarea>
     <div class='colors'>
-      <div class='sq-blue' onclick="changeColor(event, 'blue')"></div>
-      <div class='sq-red' onclick="changeColor(event, 'red')"></div>
-      <div class='sq-yellow' onclick="changeColor(event, 'yellow')"></div>
+      <div class='sq-blue' onclick="changeColor(event, 'blue', true)"></div>
+      <div class='sq-red' onclick="changeColor(event, 'red', true)"></div>
+      <div class='sq-yellow' onclick="changeColor(event, 'yellow', true)"></div>
     </div>
     <div class='resize' onmousedown="handleMouseDownR(event)" onmousemove="handleMouseMoveR(event)" onmouseup="handleMouseUpR(event)" onmouseleave="handleMouseUpR(event)">
       <div class='triangle'></div>
@@ -109,7 +109,7 @@
 
 var notes = [
   {% for note in all_notes %}
-  { color: '{{note.color}}', coord_x: {{note.coord_x}}, coord_y: {{note.coord_y}}, width: {{note.width}}, height: {{note.height}}, text: '{{note.text}}'   },
+  { id: {{note.id}}, color: '{{note.color}}', coord_x: {{note.coord_x}}, coord_y: {{note.coord_y}}, width: {{note.width}}, height: {{note.height}}, text: '{{note.text}}'   },
   {% endfor %}
 ];
 
@@ -121,10 +121,10 @@ notes.forEach(function(note) {
   newNote.style.left = note.coord_x;
   newNote.style.width = note.width;
   newNote.style.height = note.height;
-  window._n=newNote;
+  newNote.dataset.id = note.id;
   newNote.style.top=50;
   newNote.getElementsByTagName('textarea')[0].innerHTML = note.text;
-  changeColor({ target: newNote }, note.color);
+  changeColor({ target: newNote }, note.color, false);
   document.getElementById('space').appendChild(newNote);
 });
 
@@ -152,7 +152,38 @@ function findNote(event) {
 
 function deleteNote(event) {
   var note = findNote(event);
+  var url = '/notes/' + note.dataset.id;
   note.remove();
+  fetch(url, {
+    method: 'DELETE',
+  })
+}
+
+function saveChanges(event) {
+  var element = findNote(event);
+  var id = element.dataset.id;
+  var coord_x = parseFloat(element.style.left);
+  var coord_y = parseFloat(element.style.top);
+  var height = parseFloat(element.style.height);
+  var width = parseFloat(element.style.width);
+  var color = getColor(element);
+  var text = element.getElementsByTagName('textarea')[0].value;
+  console.log(id, coord_y, coord_x, height, width, color, text)
+
+  var url = '/notes/' + id.toString();
+  var data = {
+    coord_x: coord_x,
+    coord_y: coord_y,
+    height: height,
+    width: width,
+    color: color,
+    text: text,
+  };
+  fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+
 }
 
 var isDown = false;
@@ -175,9 +206,12 @@ function handleMouseMove(event) {
 }
 
 function handleMouseUp(event) {
-  isDown = false;
-  posLeft = 0;
-  posTop = 0;
+  if (isDown) {
+    isDown = false;
+    posLeft = 0;
+    posTop = 0;
+    saveChanges(event);
+  }
 }
 
 var isDownR = false;
@@ -202,12 +236,19 @@ function handleMouseMoveR(event) {
 }
 
 function handleMouseUpR(event) {
-  isDownR = false;
-  posLeftR = 0;
-  posTopR = 0;
+  if (isDownR) {
+    isDownR = false;
+    posLeftR = 0;
+    posTopR = 0;
+    saveChanges(event);
+  }
 }
 
-function changeColor(event, color) {
+function handleTextChange(event) {
+  saveChanges(event);
+}
+
+function changeColor(event, color, shouldSave) {
   var element = findNote(event);
   if (color == 'blue'){
     element.style.backgroundColor = '#CBD8F7';
@@ -218,6 +259,22 @@ function changeColor(event, color) {
   if (color == 'yellow'){
     element.style.backgroundColor = '#F7F3CB';
   }
+  if (shouldSave) {
+    saveChanges(event);
+  }
 }
+
+function getColor (element) {
+  if (element.style.backgroundColor == 'rgb(203, 216, 247)') {
+    return 'blue'
+  }
+  if (element.style.backgroundColor == 'rgb(247, 203, 203)') {
+    return 'red'
+  }
+  if (element.style.backgroundColor == 'rgb(247, 243, 203)') {
+    return 'yellow'
+  }
+}
+
 
 </script>

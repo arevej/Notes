@@ -1,8 +1,12 @@
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
+from .models import Note
+
+import json
 
 def index (request):
     if request.user.is_authenticated():
@@ -26,3 +30,20 @@ def register (request):
             return HttpResponseRedirect(reverse('notes'))
         except Exception as e:
             return render(request, 'registration/register.html', { 'error': str(e) })
+
+@csrf_exempt
+def update_note (request, note_id):
+    note = Note.objects.get(pk=note_id)
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+        note.coord_x = json_data['coord_x']
+        note.coord_y = json_data['coord_y']
+        note.height = json_data['height']
+        note.width = json_data['width']
+        note.color = json_data['color']
+        note.text = json_data['text']
+        note.save()
+        return HttpResponse('')
+    elif request.method == 'DELETE':
+        note.delete()
+        return HttpResponse('')
