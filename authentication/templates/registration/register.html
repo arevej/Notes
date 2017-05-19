@@ -1,21 +1,47 @@
-<h1> Register </h1>
+<div class='register'>
+  <h1> Register </h1>
 
-{% if error %}
-  <p>{{ error }}</p>
-{% endif %}
+  {% if error %}
+    <p>{{ error }}</p>
+  {% endif %}
 
-<form method='post'>
-  {% csrf_token %}
-  Login:
-  <input name='login' type="text">
+  <form method='post'>
+    {% csrf_token %}
+    Login:
+    <input name='login' type="text">
+    <br>
+    Email:
+    <input name='email' type="text">
+    <br>
+    Password:
+    <input name='password' type="password">
+    <br>
+    <button> Submit </button>
+  </from>
   <br>
-  Email:
-  <input name='email' type="text">
-  <br>
-  Password:
-  <input name='password' type="password">
-  <br>
-  <button> Submit </button>
-</from>
-<br>
-<a href="/login"> Login </a>
+  <a href="/login"> Login </a>
+</div>
+
+<style>
+.register {
+  width: 300px;
+  margin: 0 auto;
+  margin-top: 100px;
+  border: 3px solid #2E9AFE;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.register input {
+  margin-bottom: 10px;
+}
+
+.register button {
+  margin-bottom: 10px;
+}
+
+.register a {
+  text-decoration: none;
+  color: #2E9AFE;
+}
+</style>

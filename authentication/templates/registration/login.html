@@ -1,7 +1,29 @@
- <h1> Login </h1>
- <form method="post">
-   {% csrf_token %}
-   {{ form.as_p }}
-  <button type="submit"> Submit </button>
+<div class='login'>
+  <h1> Login </h1>
+   <form method="post">
+     {% csrf_token %}
+     {{ form.as_p }}
+    <button type="submit"> Submit </button>
+    </form>
+  <a href="/register"> Register </a>
+  <br></br>
+</div>
 
-<a href="/register"> Register </a>
+<style>
+
+.login {
+  width: 300px;
+  margin: 0 auto;
+  margin-top: 100px;
+  border: 3px solid #2E9AFE;
+  border-radius: 5px;
+  text-align: center;
+
+}
+
+.login a {
+  text-decoration: none;
+  color: #2E9AFE;
+}
+
+ </style>
