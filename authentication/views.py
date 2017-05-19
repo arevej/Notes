@@ -47,3 +47,17 @@ def update_note (request, note_id):
     elif request.method == 'DELETE':
         note.delete()
         return HttpResponse('')
+
+@csrf_exempt
+def create_note (request):
+    note = Note()
+    note.user = request.user
+    json_data = json.loads(request.body)
+    note.coord_x = json_data['coord_x']
+    note.coord_y = json_data['coord_y']
+    note.height = json_data['height']
+    note.width = json_data['width']
+    note.color = json_data['color']
+    note.text = json_data['text']
+    note.save()
+    return HttpResponse(str(note.id))
